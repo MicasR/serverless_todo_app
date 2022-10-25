@@ -1,9 +1,10 @@
 import * as AWS from 'aws-sdk'
 const AWSXRay = require( 'aws-xray-sdk' )
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
-// import { createLogger } from '../utils/logger'
+
 import { TodoItem } from '../models/TodoItem'
 // import { TodoUpdate } from '../models/TodoUpdate';
+// import { createLogger } from '../utils/logger'
 
 
 const XAWS = AWSXRay.captureAWS(AWS)
@@ -13,14 +14,17 @@ const todosTable = process.env.TODOS_TABLE
 const index = process.env.TODOS_CREATED_AT_INDEX
 const docClient: DocumentClient = createDynamoDBClient()
 
-// // DONE: Implement the dataLayer logic
-export async function createTodo(todo:TodoItem):Promise<TodoItem> {
-    await docClient.put({
-        TableName: todosTable,
-        Item: todo
-    }).promise()
+// DONE: Implement the dataLayer logic
 
-    return todo
+export async function createToDoInDb(todoItem: TodoItem): Promise < TodoItem > {
+    console.log('creating a new todo.')
+    const params = {
+        TableName: todosTable,
+        Item: todoItem
+    };
+    const result = await docClient.put(params).promise();
+    console.log(result);
+    return todoItem as TodoItem;
 }
 
 export async function getAllTodosByUserId(userId:string): Promise<TodoItem[]> {
