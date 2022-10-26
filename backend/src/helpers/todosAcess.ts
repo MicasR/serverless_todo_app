@@ -3,18 +3,14 @@ const AWSXRay = require('aws-xray-sdk')
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 import { TodoItem } from '../models/TodoItem'
-// import { TodoUpdate } from '../models/TodoUpdate';
-// import { createLogger } from '../utils/logger'
+import { TodoUpdate } from '../models/TodoUpdate'
 
 
 const XAWS = AWSXRay.captureAWS(AWS)
-
-// const logger = createLogger('TodosAccess')
 const todosTable = process.env.TODOS_TABLE
 const index = process.env.TODOS_CREATED_AT_INDEX
 const docClient: DocumentClient = createDynamoDBClient()
 
-// DONE: Implement the dataLayer logic
 
 export async function createToDoIndb(todoItem: TodoItem): Promise<TodoItem> {
     console.log('creating a new todo.')
@@ -52,7 +48,35 @@ export async function getTodoById(todoId: string): Promise<TodoItem> {
     return items[0] as TodoItem
 }
 
-export async function updateTodo(todo: TodoItem): Promise<TodoItem> {
+export async function updateToDoIndb(todoUpdate: TodoUpdate, todoId: string, userId: string): Promise < TodoUpdate > {
+    console.log("Updating todo");
+
+    const params = {
+        TableName: todosTable,
+        Key: {
+            "userId": userId,
+            "todoId": todoId
+        },
+        UpdateExpression: "set #n = :n, #dd = :dd, #d = :d",
+        ExpressionAttributeNames: {
+            "#n": "name",
+            "#dd": "dueDate",
+            "#d": "done"
+        },
+        ExpressionAttributeValues: {
+            ":n": todoUpdate.name,
+            ":dd": todoUpdate.dueDate,
+            ":d": todoUpdate.done
+        },
+        ReturnValues: "ALL_NEW"
+    };
+
+    const result = await docClient.update(params).promise();
+    console.log(result.Attributes)
+    return result.Attributes as TodoUpdate;
+}
+
+export async function updateTodoForAttachmentUrl(todo: TodoItem): Promise<TodoItem> {
     const result = await docClient.update({
         TableName: todosTable,
         Key: {
