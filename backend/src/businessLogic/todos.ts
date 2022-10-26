@@ -1,9 +1,10 @@
-import { APIGatewayProxyEvent} from 'aws-lambda'
+import { APIGatewayProxyEvent } from 'aws-lambda'
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { TodoItem } from '../models/TodoItem'
 import { getUserId } from '../lambda/utils';
 import { todoBuilder } from '../helpers/todos'
-import { createToDoInDb } from '../helpers/todosAcess';
+import { createToDoIndb, deleteToDoIndb } from '../helpers/todosAcess';
+import { parseUserId } from '../auth/utils';
 
 
 
@@ -13,7 +14,13 @@ export async function createTodo(newTodo: CreateTodoRequest, event: APIGatewayPr
     const todo = todoBuilder(newTodo, getUserId(event))
 
     // crete todo in db
-    const createdTodo = await createToDoInDb(todo)
+    const createdTodo = await createToDoIndb(todo)
 
     return createdTodo
+}
+
+
+export function deleteTodo(todoId: string, jwtToken: string): Promise<string> {
+    const userId = parseUserId(jwtToken);
+    return deleteToDoIndb(todoId, userId);
 }

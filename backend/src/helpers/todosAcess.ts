@@ -1,5 +1,5 @@
 import * as AWS from 'aws-sdk'
-const AWSXRay = require( 'aws-xray-sdk' )
+const AWSXRay = require('aws-xray-sdk')
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 import { TodoItem } from '../models/TodoItem'
@@ -16,7 +16,7 @@ const docClient: DocumentClient = createDynamoDBClient()
 
 // DONE: Implement the dataLayer logic
 
-export async function createToDoInDb(todoItem: TodoItem): Promise < TodoItem > {
+export async function createToDoIndb(todoItem: TodoItem): Promise<TodoItem> {
     console.log('creating a new todo.')
     const params = {
         TableName: todosTable,
@@ -27,12 +27,12 @@ export async function createToDoInDb(todoItem: TodoItem): Promise < TodoItem > {
     return todoItem as TodoItem;
 }
 
-export async function getAllTodosByUserId(userId:string): Promise<TodoItem[]> {
+export async function getAllTodosByUserId(userId: string): Promise<TodoItem[]> {
     const result = await docClient.query({
-        TableName : todosTable,
+        TableName: todosTable,
         KeyConditionExpression: 'userId = :userId',
         ExpressionAttributeValues: {
-            ':userId' : userId
+            ':userId': userId
         }
     }).promise()
     return result.Items as TodoItem[]
@@ -45,7 +45,7 @@ export async function getTodoById(todoId: string): Promise<TodoItem> {
         KeyConditionExpression: 'todoId = :todoId',
         ExpressionAttributeValues: {
             ':todoId': todoId
-        }       
+        }
     }).promise()
     const items = result.Items
     if (items.length === 0) return null
@@ -62,13 +62,27 @@ export async function updateTodo(todo: TodoItem): Promise<TodoItem> {
         UpdateExpression: 'set attachmentUrl = :attachmentUrl',
         ExpressionAttributeValues: {
             ':attachmentUrl': todo.attachmentUrl
-        }         
+        }
     }).promise()
 
     return result.Attributes as TodoItem
 }
 
-function createDynamoDBClient(){
+export async function deleteToDoIndb(todoId: string, userId: string): Promise<string> {
+    console.log("Deleting a todo.");
+    const params = {
+        TableName: todosTable,
+        Key: {
+            "userId": userId,
+            "todoId": todoId
+        },
+    };
+    const result = await docClient.delete(params).promise();
+    console.log(result);
+    return "" as string;
+}
+
+function createDynamoDBClient() {
     if (process.env.IS_OFFLINE) {
         console.log('Creating a local DynamoDB instance')
         return new XAWS.DynamoDB.DocumentClient({
