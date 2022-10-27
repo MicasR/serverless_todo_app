@@ -3,7 +3,7 @@ import 'source-map-support/register'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import * as middy from 'middy'
 import { cors, httpErrorHandler } from 'middy/middlewares'
-import { getTodoById, updateTodoForAttachmentUrl } from '../../helpers/todosAcess'
+import { getTodoById, updateTodoForAttachmentUrl } from '../../dataLayer/todosAcess'
 import { getUploadUrl } from '../../helpers/attachmentUtils'
 
 // import { createAttachmentPresignedUrl } from '../../businessLogic/todos'

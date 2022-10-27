@@ -3,7 +3,7 @@ import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { TodoItem } from '../models/TodoItem'
 import { getUserId } from '../lambda/utils';
 import { todoBuilder } from '../helpers/todos'
-import { createToDoIndb, deleteToDoIndb, updateToDoIndb } from '../helpers/todosAcess';
+import { createToDoIndb, deleteToDoIndb, updateToDoIndb } from '../dataLayer/todosAcess';
 import { parseUserId } from '../auth/utils';
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest';
 import { TodoUpdate } from '../models/TodoUpdate';
